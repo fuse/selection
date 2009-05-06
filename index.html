@@ -1,0 +1,1113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+  <head>
+    <title>Selection :: Tests</title>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+    <script src="prototype.js" type="text/javascript"></script>
+    <script src="jsunit/app/jsUnitCore.js" type="text/javascript"></script>
+    <script src="selection.class.js" type="text/javascript"></script>
+    <script type="text/javascript">
+      Event.observe(window, 'load', initialize);
+
+      function initialize() {
+        Event.observe($('input_button'), 'click', i);
+        Event.observe($('textarea_button'), 'click', t);
+      }
+
+      function i() {
+        var s = new Selection('input_content');
+        alert(s.getText());
+      }
+
+      function t() {
+        var t = new Selection('textarea_content');
+        alert(t.getText());
+      }
+    </script>
+
+    <script type="text/javascript">
+      // utils methods
+      function getValidInput() {
+        var s       = new Selection('input_content');
+        s._startAt  = 0;
+        s._endAt    = 9;
+        return s;
+      }
+
+      function getValidTextarea() {
+        var s       = new Selection('textarea_content');
+        s._startAt  = 0;
+        s._endAt    = 9;
+        return s;
+      }
+
+      function setDefaultValue() {
+        $('input_content').value    = "selection";
+        $('textarea_content').value = "selection";
+      }
+
+      // constructor
+      function testSelectionConstructor1() {
+        var validInputSelection = new Selection('input_content');
+        assertNotNull(validInputSelection.input());
+
+        var validTextareaSelection = new Selection('textarea_content');
+        assertNotNull(validTextareaSelection.input());
+      }
+
+      function testSelectionConstructor2() {
+        var wrongInputSelection = new Selection('wrong');
+        assertNull(wrongInputSelection.input());
+      }
+
+      function testSelectionConstructor3() {
+        var validInput          = $('input_content');
+        var validInputSelection = new Selection(validInput);
+        assertNotNull(validInputSelection.input());
+
+        var validTextarea           = $('textarea_content');
+        var validTextareaSelection  = new Selection(validTextarea);
+        assertNotNull(validTextareaSelection.input());
+      }
+
+      function testSelectionConstructor4() {
+        var wrongInput          = $('wrong');
+        var wrongInputSelection = new Selection(wrongInput);
+        assertNull(wrongInputSelection.input());
+      }
+
+      // methods
+      // charAt
+      function testCharAt1() {
+        var s = getValidInput();
+        assertEquals("s", s.charAt(0));
+
+        var t = getValidTextarea();
+        t.inputValue();
+        assertEquals("s", t.charAt(0));
+      }
+
+      function testCharAt2() {
+        var s = getValidInput();
+        assertEquals("n", s.charAt(8));
+
+        var t = getValidTextarea();
+        assertEquals("n", t.charAt(8));
+      }
+
+      function testCharAt3() {
+        var s = getValidInput();
+        assertFalse(s.charAt(9));
+
+        var t = getValidTextarea();
+        assertFalse(t.charAt(9));
+      }
+
+      // cut
+      function testCut1() {
+        var s = getValidInput();
+        s.cut();
+        assertEquals("", s.inputValue());
+
+        var t = getValidTextarea();
+        t.cut();
+        assertEquals("", t.inputValue());
+
+        setDefaultValue();
+      }
+
+      function testCut2() {
+        var s = getValidInput();
+        s.setStartAt(3);
+        s.setEndAt(4);
+        s.cut();
+        assertEquals("selction", s.inputValue());
+
+        var t = getValidTextarea();
+        t.setStartAt(3);
+        t.setEndAt(4);
+        t.cut();
+        assertEquals("selction", t.inputValue());
+
+        setDefaultValue();
+      }
+
+      function testCut3() {
+        var s = getValidInput();
+        s.setStartAt(3);
+        s.setEndAt(-1);
+        s.cut();
+        assertEquals("sel", s.inputValue());
+
+        var t = getValidTextarea();
+        t.setStartAt(3);
+        t.setEndAt(-1);
+        t.cut();
+        assertEquals("sel", t.inputValue());
+
+        setDefaultValue();
+      }
+
+      // endAt
+      function testEndAt1() {
+        var s = getValidInput();
+        assertEquals(9, s.endAt());
+
+        var t = getValidTextarea();
+        assertEquals(9, t.endAt());
+      }
+
+      function testEndAt2() {
+        var s = getValidInput();
+        s.setEndAt(5);
+        assertEquals(5, s.endAt());
+
+        var t = getValidTextarea();
+        t.setEndAt(5);
+        assertEquals(5, t.endAt());
+      }
+
+      function testEndAt3() {
+        var s = getValidInput();
+        s.setEndAt(-1);
+        assertEquals(9, s.endAt());
+
+        var t = getValidTextarea();
+        t.setEndAt(-1);
+        assertEquals(9, t.endAt());
+      }
+
+      function testEndAt4() {
+        var s = getValidInput();
+        s.setEndAt(10);
+        assertEquals(9, s.endAt());
+
+        var t = getValidTextarea();
+        t.setEndAt(10);
+        assertEquals(9, t.endAt());
+      }
+
+      function testEndAt5() {
+        var s = getValidInput();
+        s.setStartAt(3);
+        s.setEndAt(2);
+        assertEquals(9, s.endAt());
+
+        var t = getValidTextarea();
+        t.setStartAt(3);
+        t.setEndAt(2);
+        assertEquals(9, t.endAt());
+      }
+
+      function testEndAt6() {
+        var s = getValidInput();
+        s.setStartAt(3);
+        s.setEndAt(3);
+        assertEquals(9, s.endAt());
+
+        var t = getValidTextarea();
+        t.setStartAt(3);
+        t.setEndAt(3);
+        assertEquals(9, t.endAt());
+      }
+
+      // getText
+      function testGetText1() {
+        var s = getValidInput();
+        assertEquals(s.getText(), "selection");
+
+        var t = getValidTextarea();
+        assertEquals(t.getText(), "selection");
+      }
+
+      function testGetText2() {
+        var s = getValidInput();
+        s.setStartAt(3);
+        s.setEndAt(3);
+        assertEquals(s.getText(), "ection");
+
+        var t = getValidTextarea();
+        t.setStartAt(3);
+        t.setEndAt(3);
+        assertEquals(t.getText(), "ection");
+      }
+
+      function testGetText3() {
+        var s = getValidInput();
+        s.setStartAt(3);
+        s.setEndAt(4);
+        assertEquals(s.getText(), "e");
+
+        var t = getValidTextarea();
+        t.setStartAt(3);
+        t.setEndAt(4);
+        assertEquals(t.getText(), "e");
+      }
+
+      function testGetText4() {
+        var s = getValidInput();
+        s.setEndAt(4);
+        s.setStartAt(3);
+        assertEquals(s.getText(), "e");
+
+        var t = getValidTextarea();
+        t.setEndAt(4);
+        t.setStartAt(3);
+        assertEquals(t.getText(), "e");
+      }
+
+      function testGetText5() {
+        var s = getValidInput();
+        s.setEndAt(4);
+        s.setStartAt(4);
+        assertEquals(s.getText(), "sele");
+
+        var t = getValidTextarea();
+        t.setEndAt(4);
+        t.setStartAt(4);
+        assertEquals(t.getText(), "sele");
+      }
+
+      // inputNodeName
+      function testInputNodeName1() {
+        var s = getValidInput();
+        assertEquals("INPUT", s.inputNodeName());
+
+        var t = getValidTextarea();
+        assertEquals("TEXTAREA", t.inputNodeName());
+      }
+
+      function testInputNodeName2() {
+        var s = new Selection($('wrong'));
+        assertEquals("", s.inputNodeName());
+      }
+
+      // inputValue
+      function testInputValue1() {
+        var s = getValidInput();
+        assertEquals("selection", s.inputValue());
+
+        var t = getValidTextarea();
+        assertEquals("selection", t.inputValue());
+      }
+
+      function testInputValue2() {
+        var s = new Selection($('wrong'));
+        assertEquals("", s.inputValue());
+      }
+
+      function testInputValue3() {
+        var s = getValidInput();
+        s.input().value = "foo";
+        assertEquals("foo", s.inputValue());
+
+        var t = getValidTextarea();
+        t.input().value = "foo";
+        assertEquals("foo", t.inputValue());
+
+        setDefaultValue();
+      }
+
+      // insertAfter
+      function testInsertAfter1() {
+        var s = getValidInput();
+        s.insertAfter("</strong>");
+        assertEquals("selection</strong>", s.inputValue());
+
+        var t = getValidTextarea();
+        t.insertAfter("</strong>");
+        assertEquals("selection</strong>", t.inputValue());
+
+        setDefaultValue();
+      }
+
+      function testInsertAfter2() {
+        var s = getValidInput();
+        s.insertAfter("<p>");
+        s.insertAfter("<strong>");
+        assertEquals("selection<strong><p>", s.inputValue());
+
+        var t = getValidTextarea();
+        t.insertAfter("<p>");
+        t.insertAfter("<strong>");
+        assertEquals("selection<strong><p>", t.inputValue());
+
+        setDefaultValue();
+      }
+
+      function testInsertAfter3() {
+        var s = getValidInput();
+        s.insertAfter("</strong>");
+        assertEquals(9, s.length());
+
+        var t = getValidTextarea();
+        t.insertAfter("</strong>");
+        assertEquals(9, t.length());
+
+        setDefaultValue();
+      }
+
+      function testInsertAfter4() {
+        var s = getValidInput();
+        s.insertAfter("</strong>");
+        assertEquals(0, s.startAt());
+
+        var t = getValidTextarea();
+        t.insertAfter("</strong>");
+        assertEquals(0, t.startAt());
+
+        setDefaultValue();
+      }
+
+      function testInsertAfter5() {
+        var s = getValidInput();
+        s.insertAfter("</strong>");
+        assertEquals(9, s.endAt());
+
+        var t = getValidTextarea();
+        t.insertAfter("</strong>");
+        assertEquals(9, t.endAt());
+
+        setDefaultValue();
+      }
+
+      // insertAt
+      function testInsertAt1() {
+        var s = getValidInput();
+        s.insertAt('foo');
+        assertEquals("selection", s.inputValue());
+
+        var t = getValidTextarea();
+        t.insertAt('foo');
+        assertEquals("selection", t.inputValue());
+
+        setDefaultValue();
+      }
+
+      function testInsertAt2() {
+        var s = getValidInput();
+        s.insertAt('foo', -1);
+        assertEquals("selection", s.inputValue());
+
+        var t = getValidTextarea();
+        t.insertAt('foo', -1);
+        assertEquals("selection", t.inputValue());
+
+        setDefaultValue();
+      }
+
+      function testInsertAt3() {
+        var s = getValidInput();
+        s.insertAt('foo', 10);
+        assertEquals("selection", s.inputValue());
+
+        var t = getValidTextarea();
+        t.insertAt('foo', 10);
+        assertEquals("selection", t.inputValue());
+
+        setDefaultValue();
+      }
+
+      function testInsertAt4() {
+        var s = getValidInput();
+        s.insertAt('foo', 1);
+        s = getValidInput();
+        assertEquals("sfooelection", s.inputValue());
+
+        var t = getValidTextarea();
+        t.insertAt('foo', 1);
+        t = getValidInput();
+        assertEquals("sfooelection", t.inputValue());
+
+        setDefaultValue();
+      }
+
+      function testInsertAt5() {
+        var s = getValidInput();
+        s.insertAt('foo', 8);
+        s = getValidInput();
+        assertEquals("selectiofoon", s.inputValue());
+
+        var t = getValidTextarea();
+        t.insertAt('foo', 8);
+        t = getValidInput();
+        assertEquals("selectiofoon", t.inputValue());
+
+        setDefaultValue();
+      }
+
+      function testInsertAt6() {
+        var s = getValidInput();
+        s.insertAt('foo', 8);
+        assertFalse(s.isValid());
+
+        var t = getValidTextarea();
+        t.insertAt('foo', 8);
+        assertFalse(t.isValid());
+
+        setDefaultValue();
+      }
+
+      // insertBefore
+      function testInsertBefore1() {
+        var s = getValidInput();
+        s.insertBefore("<strong>");
+        assertEquals("<strong>selection", s.inputValue());
+
+        var t = getValidTextarea();
+        t.insertBefore("<strong>");
+        assertEquals("<strong>selection", t.inputValue());
+
+        setDefaultValue();
+      }
+
+      function testInsertBefore2() {
+        var s = getValidInput();
+        s.insertBefore("<strong>");
+        s.insertBefore("<p>");
+        assertEquals("<strong><p>selection", s.inputValue());
+
+        var t = getValidTextarea();
+        t.insertBefore("<strong>");
+        t.insertBefore("<p>");
+        assertEquals("<strong><p>selection", t.inputValue());
+
+        setDefaultValue();
+      }
+
+      function testInsertBefore3() {
+        var s = getValidInput();
+        s.insertBefore("<strong>");
+        assertEquals(9, s.length());
+
+        var t = getValidTextarea();
+        t.insertBefore("<strong>");
+        assertEquals(9, t.length());
+
+        setDefaultValue();
+      }
+
+      function testInsertBefore4() {
+        var s = getValidInput();
+        s.insertBefore("<strong>");
+        assertEquals(8, s.startAt());
+
+        var t = getValidTextarea();
+        t.insertBefore("<strong>");
+        assertEquals(8, t.startAt());
+
+        setDefaultValue();
+      }
+
+      function testInsertBefore5() {
+        var s = getValidInput();
+        s.insertBefore("<strong>");
+        assertEquals(17, s.endAt());
+
+        var t = getValidTextarea();
+        t.insertBefore("<strong>");
+        assertEquals(17, t.endAt());
+
+        setDefaultValue();
+      }
+
+      // isValidInput
+      function testIsValidInput1() {
+        var s = getValidInput();
+        assertTrue(s.isValidInput());
+
+        var t = getValidTextarea();
+        assertTrue(t.isValidInput());
+      }
+
+      function testIsValidInput1() {
+        var s = new Selection('wrong');
+        assertFalse(s.isValidInput());
+      }
+
+      // isValid
+      function textIsValid1() {
+        var s = getValidInput();
+        // endAt == startAt => length = 0
+        assertFalse(s.isValid());
+
+        var t = getValidTextarea();
+        // endAt == startAt => length = 0
+        assertFalse(t.isValid());
+      }
+
+      function textIsValid2() {
+        var s = getValidInput();
+        s._startAt = 0;
+        assertTrue(s.isValid());
+
+        var t = getValidTextarea();
+        t._startAt = 0;
+        assertTrue(t.isValid());
+      }
+
+      function textIsValid3() {
+        var s = getValidInput();
+        s._startAt = 0;
+        s._endAt = 0;
+        assertFalse(s.isValid());
+
+        var t = getValidTextarea();
+        t._startAt = 0;
+        t._endAt = 0;
+        assertFalse(t.isValid());
+      }
+
+      function textIsValid4() {
+        var s = getValidInput();
+        s._startAt = -1;
+        assertFalse(s.isValid());
+
+        var t = getValidTextarea();
+        t._startAt = -1;
+        assertFalse(t.isValid());
+      }
+
+      function textIsValid5() {
+        var s = getValidInput();
+        s._endAt = -1;
+        assertFalse(s.isValid());
+
+        var t = getValidTextarea();
+        t._endAt = -1;
+        assertFalse(t.isValid());
+      }
+
+      function textIsValid6() {
+        var s = getValidInput();
+        s._startAt = 0;
+        s._endAt = 9;
+        assertTrue(s.isValid());
+
+        var t = getValidTextarea();
+        t._startAt = 0;
+        t._endAt = 9;
+        assertTrue(t.isValid());
+      }
+
+      function textIsValid7() {
+        var s = getValidInput();
+        s._startAt = 3;
+        s._endAt = 4;
+        assertTrue(s.isValid());
+
+        var t = getValidTextarea();
+        t._startAt = 3;
+        t._endAt = 4;
+        assertTrue(t.isValid());
+      }
+
+      function textIsValid8() {
+        var s = getValidInput();
+        s._startAt = 4;
+        s._endAt = 3;
+        assertFalse(s.isValid());
+
+        var t = getValidTextarea();
+        t._startAt = 4;
+        t._endAt = 3;
+        assertFalse(t.isValid());
+      }
+
+      function textIsValid9() {
+        var s = getValidInput();
+        s._startAt = 0;
+        s._endAt = 10;
+        assertFalse(s.isValid());
+
+        var t = getValidTextarea();
+        t._startAt = 0;
+        t._endAt = 10;
+        assertFalse(t.isValid());
+      }
+
+      function textIsValid10() {
+        var s = getValidInput();
+        s._startAt = 0;
+        s._endAt = 9;
+        assertTrue(s.isValid());
+
+        var t = getValidTextarea();
+        t._startAt = 0;
+        t._endAt = 9;
+        assertTrue(t.isValid());
+      }
+
+      // length
+      function testLength1() {
+        var s = getValidInput();
+        assertEquals(9, s.length());
+
+        var t = getValidTextarea();
+        assertEquals(9, t.length());
+      }
+
+      function testLength2() {
+        var s = getValidInput();
+        assertEquals(s.length(), s.endAt() - s.startAt());
+
+        var t = getValidTextarea();
+        assertEquals(t.length(), t.endAt() - t.startAt());
+      }
+
+      function testLength3() {
+        var s = getValidInput();
+        s._startAt = 3;
+        s._endAt = 2;
+        assertEquals(0, s.length());
+
+        var t = getValidTextarea();
+        t._startAt = 3;
+        t._endAt = 2;
+        assertEquals(0, t.length());
+      }
+
+      function testLength4() {
+        var s = getValidInput();
+        s._startAt = 3;
+        s._endAt = 3;
+        assertEquals(0, s.length());
+
+        var t = getValidTextarea();
+        t._startAt = 3;
+        t._endAt = 3;
+        assertEquals(0, t.length());
+      }
+
+      function testLength5() {
+        var s = getValidInput();
+        s._endAt = 10;
+        assertEquals(0, s.length());
+
+        var t = getValidTextarea();
+        t._endAt = 10;
+        assertEquals(0, t.length());
+      }
+
+      function testLength6() {
+        var s = getValidInput();
+        s._startAt = -1;
+        assertEquals(0, s.length());
+
+        var t = getValidTextarea();
+        t._startAt = -1;
+        assertEquals(0, t.length());
+      }
+
+      // setEndAt
+      function testSetEndAt1() {
+        var s = getValidInput();
+        s.setEndAt(-1);
+        assertNotEquals(-1, s.endAt());
+
+        var t = getValidTextarea();
+        t.setEndAt(-1);
+        assertNotEquals(-1, t.endAt());
+      }
+
+      function testSetEndAt2() {
+        var s = getValidInput();
+        s.setEndAt(10);
+        assertNotEquals(10, s.endAt());
+
+        var t = getValidTextarea();
+        t.setEndAt(10);
+        assertNotEquals(10, t.endAt());
+      }
+
+      function testSetEndAt3() {
+        var s = getValidInput();
+        s.setEndAt(3);
+        assertEquals(3, s.endAt());
+
+        var t = getValidTextarea();
+        t.setEndAt(3);
+        assertEquals(3, t.endAt());
+      }
+
+      function testSetEndAt4() {
+        var s = getValidInput();
+        assertFalse(s.setEndAt(-1));
+
+        var t = getValidTextarea();
+        assertFalse(t.setEndAt(-1));
+      }
+
+      function testSetEndAt5() {
+        var s = getValidInput();
+        assertEquals(9, s.setEndAt(3));
+
+        var t = getValidTextarea();
+        assertEquals(9, t.setEndAt(3));
+      }
+
+      // setStartAt
+      function testSetStartAt1() {
+        var s = getValidInput();
+        s.setStartAt(-1);
+        assertNotEquals(-1, s.startAt());
+
+        var t = getValidTextarea();
+        t.setStartAt(-1);
+        assertNotEquals(-1, t.startAt());
+      }
+
+      function testSetStartAt2() {
+        var s = getValidInput();
+        s.setStartAt(9);
+        assertNotEquals(9, s.startAt());
+
+        var t = getValidTextarea();
+        t.setStartAt(9);
+        assertNotEquals(9, t.startAt());
+      }
+
+      function testSetStartAt3() {
+        var s = getValidInput();
+        s.setStartAt(4);
+        assertEquals(4, s.startAt());
+
+        var t = getValidTextarea();
+        t.setStartAt(4);
+        assertEquals(4, t.startAt());
+      }
+
+      function testSetStartAt4() {
+        var s = getValidInput();
+        assertFalse(s.setStartAt(-1));
+
+        var t = getValidTextarea();
+        assertFalse(t.setStartAt(-1));
+      }
+
+      function testSetStartAt5() {
+        var s = getValidInput();
+        assertEquals(0, s.setStartAt(3));
+
+        var t = getValidTextarea();
+        assertEquals(0, t.setStartAt(3));
+      }
+
+      // setText
+      function testSetText1() {
+        var s       = getValidInput();
+        s._startAt  = 2;
+        s._endAt    = 3;
+        s.setText("foo");
+        assertEquals("sefooection", s.inputValue());
+
+        var t       = getValidTextarea();
+        t._startAt  = 2;
+        t._endAt    = 3;
+        t.setText("foo");
+        assertEquals("sefooection", t.inputValue());
+
+        setDefaultValue();
+      }
+
+      function testSetText2() {
+        var s       = getValidInput();
+        s._startAt  = 2;
+        s._endAt    = 3;
+        s.setText("foo");
+        assertEquals("foo", s.getText());
+
+        var t       = getValidTextarea();
+        t._startAt  = 2;
+        t._endAt    = 3;
+        t.setText("foo");
+        assertEquals("foo", t.getText());
+
+        setDefaultValue();
+      }
+
+      function testSetText3() {
+        var s       = getValidInput();
+        s._startAt  = 2;
+        s._endAt    = 3;
+        s.setText("foo");
+        assertEquals(2, s.startAt());
+
+        var t       = getValidTextarea();
+        t._startAt  = 2;
+        t._endAt    = 3;
+        t.setText("foo");
+        assertEquals(2, t.startAt());
+
+        setDefaultValue();
+      }
+
+      function testSetText4() {
+        var s       = getValidInput();
+        s._startAt  = 2;
+        s._endAt    = 3;
+        s.setText("foo");
+        assertEquals(5, s.endAt());
+
+        var t       = getValidTextarea();
+        t._startAt  = 2;
+        t._endAt    = 3;
+        t.setText("foo");
+        assertEquals(5, t.endAt());
+
+        setDefaultValue();
+      }
+
+      function testSetText5() {
+        var s = getValidInput();
+        s.setText("foo");
+        assertEquals("foo", s.inputValue());
+
+        var t = getValidTextarea();
+        t.setText("foo");
+        assertEquals("foo", t.inputValue());
+
+        setDefaultValue();
+      }
+
+      function testSetText6() {
+        var s = getValidInput();
+        s.setText("foo");
+        assertEquals("foo", s.getText());
+
+        var t = getValidTextarea();
+        t.setText("foo");
+        assertEquals("foo", t.getText());
+
+        setDefaultValue();
+      }
+
+      function testSetText7() {
+        var s = getValidInput();
+        s.setText("foo");
+        assertEquals(0, s.startAt());
+
+        var t = getValidTextarea();
+        t.setText("foo");
+        assertEquals(0, t.startAt());
+
+        setDefaultValue();
+      }
+
+      function testSetText8() {
+        var s = getValidInput();
+        s.setText("foo");
+        assertEquals(3, s.endAt());
+
+        var t = getValidTextarea();
+        t.setText("foo");
+        assertEquals(3, t.endAt());
+
+        setDefaultValue();
+      }
+
+      // startAt
+      function testStartAt1() {
+        var s = getValidInput();
+        assertEquals(0, s.startAt());
+
+        var t = getValidTextarea();
+        assertEquals(0, t.startAt());
+      }
+
+      function testStartAt2() {
+        var s = getValidInput();
+        s.setStartAt(5);
+        assertEquals(5, s.startAt());
+
+        var t = getValidTextarea();
+        t.setStartAt(5);
+        assertEquals(5, t.startAt());
+      }
+
+      function testStartAt3() {
+        var s = getValidInput();
+        s.setStartAt(-1);
+        assertEquals(0, s.startAt());
+
+        var t = getValidTextarea();
+        t.setStartAt(-1);
+        assertEquals(0, t.startAt());
+      }
+
+      function testStartAt4() {
+        var s = getValidInput();
+        s.setStartAt(8);
+        assertEquals(8, s.startAt());
+
+        var t = getValidTextarea();
+        t.setStartAt(8);
+        assertEquals(8, t.startAt());
+      }
+
+      function testStartAt5() {
+        var s = getValidInput();
+        s.setStartAt(9);
+        assertEquals(0, s.startAt());
+
+        var t = getValidTextarea();
+        t.setStartAt(9);
+        assertEquals(0, t.startAt());
+      }
+
+      function testStartAt6() {
+        var s = getValidInput();
+        s.setEndAt(2);
+        s.setStartAt(3);
+        assertEquals(0, s.startAt());
+
+        var t = getValidTextarea();
+        t.setEndAt(2);
+        t.setStartAt(3);
+        assertEquals(0, t.startAt());
+      }
+
+      function testStartAt7() {
+        var s = getValidInput();
+        s.setEndAt(3);
+        s.setStartAt(3);
+        assertEquals(0, s.startAt());
+
+        var t = getValidTextarea();
+        t.setEndAt(3);
+        t.setStartAt(3);
+        assertEquals(0, t.startAt());
+      }
+
+      // unvalidate
+      function testUnvalidate3() {
+        var s = getValidInput();
+        s.unvalidate();
+        assertFalse(s.isValidInput());
+
+        var t = getValidTextarea();
+        t.unvalidate();
+        assertFalse(t.isValidInput());
+      }
+
+      function testUnvalidate2() {
+        var s = getValidInput();
+        assertTrue(s.isValidInput());
+
+        var t = getValidTextarea();
+        assertTrue(t.isValidInput());
+      }
+
+      // others
+      function testSetStartAndEnd1() {
+        var s = getValidInput();
+        s.setStartAt(3);
+        s.setEndAt(3);
+        assertNotEquals(3, s.endAt());
+
+        var t = getValidTextarea();
+        t.setStartAt(3);
+        t.setEndAt(3);
+        assertNotEquals(3, t.endAt());
+      }
+
+      function testSetStartAndEnd2() {
+        var s = getValidInput();
+        s.setEndAt(3);
+        s.setStartAt(3);
+        assertNotEquals(3, s.startAt());
+
+        var t = getValidTextarea();
+        t.setEndAt(3);
+        t.setStartAt(3);
+        assertNotEquals(3, t.startAt());
+      }
+
+      function testInsertBeforeAndAfter1() {
+        var s = getValidInput();
+        s.insertBefore("<strong>");
+        s.insertAfter("</strong>");
+        assertEquals("<strong>selection</strong>", s.inputValue());
+
+        var t = getValidTextarea();
+        t.insertBefore("<strong>");
+        t.insertAfter("</strong>");
+        assertEquals("<strong>selection</strong>", t.inputValue());
+
+        setDefaultValue();
+      }
+
+      function testInsertBeforeAndAfter2() {
+        var s = getValidInput();
+        s.insertBefore("<strong>");
+        s.insertAfter("</strong>");
+        assertEquals("selection", s.getText());
+
+        var t = getValidTextarea();
+        t.insertBefore("<strong>");
+        t.insertAfter("</strong>");
+        assertEquals("selection", t.getText());
+
+        setDefaultValue();
+      }
+
+      function testInsertBeforeAndAfter3() {
+        var s = getValidInput();
+        s.insertBefore("<strong>");
+        s.insertAfter("</strong>");
+        assertEquals(8, s.startAt());
+
+        var t = getValidTextarea();
+        t.insertBefore("<strong>");
+        t.insertAfter("</strong>");
+        assertEquals(8, t.startAt());
+
+        setDefaultValue();
+      }
+
+      function testInsertBeforeAndAfter4() {
+        var s = getValidInput();
+        s.insertBefore("<strong>");
+        s.insertAfter("</strong>");
+        assertEquals(17, s.endAt());
+
+        var t = getValidTextarea();
+        t.insertBefore("<strong>");
+        t.insertAfter("</strong>");
+        assertEquals(17, t.endAt());
+
+        setDefaultValue();
+      }
+
+      function testInsertBeforeAndAfter5() {
+        var s = getValidInput();
+        s.input().value = "welcome";
+        s._startAt = 0;
+        s._endAt = 7;
+        s.insertBefore("<strong>");
+        s.insertAfter("</strong>");
+        assertEquals("<strong>welcome</strong>", s.input().value);
+
+        var t = getValidTextarea();
+        t.input().value = "welcome";
+        t._startAt = 0;
+        t._endAt = 7;
+        t.insertBefore("<strong>");
+        t.insertAfter("</strong>");
+        assertEquals("<strong>welcome</strong>", t.input().value);
+
+        setDefaultValue();
+      }
+
+    </script>
+  </head>
+
+  <body>
+    <input type="text" id="input_content" value="selection" />
+    <textarea id="textarea_content">selection</textarea>
+    <input type="button" id="input_button" value="Input's selection" />
+    <input type="button" id="textarea_button" value="Textarea's selection" />
+  </body>
+
+</html>
